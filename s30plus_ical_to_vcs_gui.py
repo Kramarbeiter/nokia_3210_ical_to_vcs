@@ -381,9 +381,17 @@ class NokiaConverterApp:
             pass
 
         # Load the icon for the window
-        icon_path = resource_path("icon.ico")
+        icon_path = resource_path("./icon.ico")
         if os.path.exists(icon_path):
-            self.root.iconbitmap(icon_path)
+            try:
+                self.root.iconbitmap(icon_path)
+            except tk.TclError:
+                # Fallback for Linux/macOS if .ico isn't supported natively by Tcl/Tk
+                try:
+                    img = tk.PhotoImage(file=icon_path)
+                    self.root.iconphoto(True, img)
+                except Exception:
+                    pass  # Gracefully ignore if the format completely fails on this OS
 
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
